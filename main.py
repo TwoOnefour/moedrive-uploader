@@ -124,7 +124,7 @@ class Uploader:
         if res.status_code != 200:
             raise Exception('Login failed. Please check your credentials.')
         self.session = _session
-        print(f'Welcome back {res.json()['data']['nickname']}. You are in group {res.json()['data']['group']['name']}.')
+        print(f"Welcome back {res.json()['data']['nickname']}. You are in group {res.json()['data']['group']['name']}.")
         if res.json()['data']['group']['name'] in self.group_dict:
             self.group = res.json()['data']['group']['name']
         else:
