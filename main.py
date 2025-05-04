@@ -193,7 +193,7 @@ class Uploader:
             """
             SELECT * FROM downloading_tasks WHERE gid = ?
             """,
-            task_gid
+            [task_gid]
         )
         res = self.cursor.fetchone()
         self.downloading_by_url(url=self.get_magnet(res[1]))
@@ -275,6 +275,7 @@ class Uploader:
             """,
             lst
         )
+
         self.cursor.executemany(
             """
             INSERT INTO downloading_tasks (gid, url) VALUES (?, ?)
@@ -284,12 +285,19 @@ class Uploader:
 
 
     def get_gid_by_hashinfo(self, url):
-        sleep(2) # wait the data sync
-        js = self.session.get("https://pan.moe/api/v3/aria2/downloading").json()['data']
-        for task in js:
-            if task['info']['infoHash'] == url:
-                return task['info']['gid']
-
+        sleep(2) # wait the data sync and metadata fetching
+        find_flag = False
+        while True:
+            js = self.session.get("https://pan.moe/api/v3/aria2/downloading").json()['data']
+            for task in js:
+                if task['info']['infoHash'] == url:
+                    find_flag = True
+                    if task['info']['bittorrent']['mode'] != "":
+                        return task['info']['gid']
+                    print("waiting for metadata...")
+            if not find_flag:
+                break
+            sleep(2)
 
     def get_current_tasks_count(self):
         return len(self.list_downloading_tasks())
