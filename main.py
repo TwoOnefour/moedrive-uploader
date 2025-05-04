@@ -297,8 +297,8 @@ class Uploader:
     def run(self):
         try:
             self.login(
-                username="twoonefour@voidval.com",
-                password="ECQBrfAF6nE_u"
+                username="",
+                password=""
             )
             self.sql_init()
             self.sql_import()
